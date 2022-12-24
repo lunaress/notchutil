@@ -1,8 +1,3 @@
-# notchutil
-Easily "remove" the notch on any MacBook with notchutil!
-
-
-
 # Synopsis
        notchutil [-hvlt] [-f] <model>
 
