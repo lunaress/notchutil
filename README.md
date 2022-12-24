@@ -36,3 +36,5 @@ Easily "remove" the notch on any MacBook with notchutil!
 # Example
 <img width="1512" alt="example" src="https://user-images.githubusercontent.com/121362066/209452105-23ea083c-2187-4366-b61a-0d0841fa3cbe.png">
 
+The new resolution is just snuggly below the notch, just like if you were to fullscreen into an app.
+To revert this, simply run the program again or tick "Default for Display" resolution under Display in System Preferences.
