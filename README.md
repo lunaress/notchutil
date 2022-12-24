@@ -33,3 +33,6 @@ Easily "remove" the notch on any MacBook with notchutil!
        connected.
 
 
+# Example
+<img width="1512" alt="example" src="https://user-images.githubusercontent.com/121362066/209452105-23ea083c-2187-4366-b61a-0d0841fa3cbe.png">
+
