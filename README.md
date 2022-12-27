@@ -2,7 +2,7 @@
 notchutil is a simple tool to switch between the default and a modified resolution with the intent to hide the notch on Apple's newer MacBook models.
 </h2>
 
-## Running the downloaded binary
+## Running the executable
 <b>macOS 12.0 Monterey and later.</b><br>
 Using your terminal emulator of choice, simply run the executable like usual:
 
