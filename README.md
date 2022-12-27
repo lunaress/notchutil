@@ -21,7 +21,7 @@ to flag the file as executable.
 
 ## Compiling
 Simply create a new Command Line Tool project in Xcode. Make sure to select C++ as the project language.<br>
-It is important that you set the language dialect to ISO C++17 in the project settings.
+It is important that you set the language dialect to ISO C++17 (not GNU C++!) in the project settings.
 
 You also want to tell the linker to include CoreFoundation and CoreGraphics under Build Phases.
 <img width="1237" alt="linker" src="https://user-images.githubusercontent.com/121362066/209615301-9ec1b0b0-24d3-46b1-aca1-7fd5226f47e4.png">
