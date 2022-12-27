@@ -3,6 +3,7 @@ notchutil is a simple tool to switch between the default and a modified resoluti
 </h2>
 
 ## Running the downloaded binary
+<b>macOS 12.0 Monterey and later.</b><br>
 Using your terminal emulator of choice, simply run the executable like usual:
 
        ./notchutil
@@ -19,7 +20,7 @@ to flag the file as executable.
 
 
 ## Compiling
-Simply create a new C++ Command Line Tool project in Xcode, throw the code in there and compile. No special precautions have to be taken.<br>
+Simply create a new Command Line Tool project in Xcode. Make sure to select C++ as the project language.
 Keep in mind that you must have some form of signature, at least to run locally. Otherwise it will not compile.
 
 ## Synopsis
