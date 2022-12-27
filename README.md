@@ -24,7 +24,8 @@ Simply create a new Command Line Tool project in Xcode. Make sure to select C++ 
 It is important that you set the language dialect to ISO C++17 in the project settings.
 
 You also want to tell the linker to include CoreFoundation and CoreGraphics under Build Phases.
-<img width="1073" alt="1" src="https://user-images.githubusercontent.com/121362066/209615050-53e8924b-eb9f-4210-b71c-cd33d7b7874c.png">
+<img width="1237" alt="linker" src="https://user-images.githubusercontent.com/121362066/209615301-9ec1b0b0-24d3-46b1-aca1-7fd5226f47e4.png">
+
 
 Keep in mind that you must have some form of signature, at least to run locally. Otherwise it will not compile.
 
