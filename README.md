@@ -30,7 +30,7 @@ You also want to tell the linker to include CoreFoundation and CoreGraphics unde
 Keep in mind that you must have some form of signature, at least to run locally. Otherwise it will not compile.
 
 ## Synopsis
-       notchutil [-hvlt] [-f] <model>
+       notchutil [-hvlt]
 
 ## Options
        notchutil does not require any options. Your MacBook should be detected
@@ -45,8 +45,6 @@ Keep in mind that you must have some form of signature, at least to run locally.
        -l, --list           List all MacBooks supported
 
        -t, --temporary      Only configure the mode for the session
-
-       -f, --force <model>  Force a specific MacBook model from the list
 
 
 ## Bugs
