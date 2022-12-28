@@ -1,6 +1,6 @@
 /*
  *
- * notchtutil 0.7
+ * notchtutil 0.8
  * author: lunaress
  * website: https://lunaress.moe
  *
@@ -15,9 +15,7 @@
 
 
 
-const char* programVersion = "0.7";
-bool isForcingMac = false;
-char* forcedMac;
+const char* programVersion = "0.8";
 CGConfigureOption configurationLength = kCGConfigurePermanently;
 
 
@@ -37,35 +35,13 @@ static struct {
 
 
 
-static struct {
-    const int mbp2021a_w_d = 1512; // 14"
-    const int mbp2021a_h_d = 982;
-
-    const int mbp2021a_h_m = 945; // Modified
-    
-    
-    const int mbp2021b_w_d = 1728; // 16"
-    const int mbp2021b_h_d = 1117;
-    
-    const int mbp2021b_h_m = 1080;
-    
-    
-    const int mba2022_w_d = 1280; // Air
-    const int mba2022_h_d = 832;
-    
-    const int mba2022_h_m = 800;
-}macResolutions;
-
-
-
 const char* helpText =
-            "usage: notchutil [-hvlt] [-f]\n\
+            "usage: notchutil [-hvlt]\n\
             \r\t-h, --help\t\tprints this help text\n\
             \r\t-v, --version\t\tshows information about this program\n\
             \r\t-l, --list\t\tlists all currently available macbooks\n\
             \r\t-t, --temporary\t\tonly configure for session\n\
-            \r\t-f, --force <model>\tforces a specific notch macbook model\n\n\
-            \r\texample: notchutil --temporary --force MacBookPro18,4\n\n";
+            \r\texample: notchutil --temporary\n\n";
 
 
 
@@ -80,17 +56,19 @@ const char* validMacBooksText =
             "valid models:\t\tname:\n\
             \rMacBook Pro 2021 14\"\tMacBookPro18,3\n\
             \rMacBook Pro 2021 16\"\tMacBookPro18,4\n\
-            \rMacBook Air 2022\tMac14,2\n\n";
+            \rMacBook Air 2022\tMac14,2\n";
 
 
 
-bool isCompatibleMac(char* input) {
-    if ((strcmp(input, macTypes.mbp2021a)) != 0 &&
-        (strcmp(input, macTypes.mbp2021b)) != 0 &&
-        (strcmp(input, macTypes.mba2022)) != 0)
-        return false;
+std::tuple<int, int, int> getResolution(char* model) {
+    // default height, default width, modified width for fitting the resolution below the notch
+    if (strcmp(model, macTypes.mbp2021a) == 0) return std::make_tuple(1512, 982, 945);
+    if (strcmp(model, macTypes.mbp2021b) == 0) return std::make_tuple(1728, 1117, 1080);
+    if (strcmp(model, macTypes.mba2022) == 0) return std::make_tuple(1280, 832, 800);
     
-    return true;
+    printf("notchutil: invalid model: %s\n", model);
+    printf("%s", validMacBooksText);
+    exit(1);
 }
 
 
@@ -99,18 +77,30 @@ static struct option long_options[] = {
     {"help", no_argument, NULL, 'h'},
     {"version", no_argument, NULL, 'v'},
     {"list", no_argument, NULL, 'l'},
-    {"force", required_argument, NULL, 'f'},
     {"temporary", no_argument, NULL, 't'},
     {NULL, 0, NULL, 0}
 };
 
 
 
+
 int main(int argc, const char* argv[]) {
+    size_t len = 0;
+    
+    sysctlbyname("hw.model", nullptr, &len, NULL, 0);
+    std::string model(len, '\0');
+    sysctlbyname("hw.model", const_cast<char*>(model.data()), &len, NULL, 0);
+
+    thisMac.macModel = model;
+    
+    if (thisMac.macModel.find("MacBook") != std::string::npos)
+        thisMac.isMacBook = true;
+    
+    
     int ch;
     opterr = 0;
     
-    while ((ch = getopt_long(argc, (char* const*)argv, (char*)"hvltf:", long_options, NULL)) != -1) {
+    while ((ch = getopt_long(argc, (char* const*)argv, (char*)"hvlt", long_options, NULL)) != -1) {
         switch (ch) {
             case 'h':
                 printf("%s", helpText);
@@ -119,19 +109,8 @@ int main(int argc, const char* argv[]) {
                 printf("%s", versionText.c_str());
                 return 0;
             case 'l':
-                printf("%s", validMacBooksText);
+                printf("%s\nyour mac: %s\n\n", validMacBooksText, thisMac.macModel.c_str());
                 return 0;
-            case 'f':
-                forcedMac = optarg;
-                if (!isCompatibleMac(forcedMac)) {
-                    printf("notchutil: invalid model: %s\n", forcedMac);
-                    printf("%s", validMacBooksText);
-                    return 1;
-                }
-                
-                printf("notchutil: forcing model: %s\n", forcedMac);
-                isForcingMac = true;
-                break;
             case 't':
                 printf("notchutil: configuring for session\n");
                 configurationLength = kCGConfigureForSession;
@@ -147,39 +126,12 @@ int main(int argc, const char* argv[]) {
     
     
     
-    size_t len = 0;
-    
-    sysctlbyname("hw.model", nullptr, &len, NULL, 0);
-    std::string model(len, '\0');
-    sysctlbyname("hw.model", const_cast<char*>(model.data()), &len, NULL, 0);
-
-    thisMac.macModel = model;
-    
-    if (thisMac.macModel.find("MacBook") != std::string::npos)
-        thisMac.isMacBook = true;
-    
-    
-    if ((!isCompatibleMac(thisMac.macModel.data())) && (isForcingMac == false)) {
-        printf("notchutil: this mac is unsupported. continue? [y/n]");
-        
-        char input = getchar();
-        switch (toupper(input)) {
-            case 'N':   return 0;
-            case 'Y':   break;
-            default:    return 0;
-          }
-    }
-
-
-    
     int currentWidth = NULL;
     int currentHeight = NULL;
     
     int newWidth = NULL;
     int newHeight = NULL;
-    
-    char* currentGivenMac;
-    
+        
     CGDirectDisplayID display = CGMainDisplayID();
     CGDisplayModeRef currentMode = CGDisplayCopyDisplayMode(display);
     
@@ -189,34 +141,15 @@ int main(int argc, const char* argv[]) {
     CGDisplayModeRelease(currentMode);
 
     
-    // may god have mercy on my soul
-    
-    
-    isForcingMac ? currentGivenMac = forcedMac : currentGivenMac = thisMac.macModel.data();
-    
-    
-    if ((strcmp(currentGivenMac, macTypes.mbp2021a)) == 0) { // 14"
-        newWidth = macResolutions.mbp2021a_w_d;
-        newHeight = macResolutions.mbp2021a_h_d;
-        
-        if ((newHeight == currentHeight) && (newWidth == currentWidth))
-            newHeight = macResolutions.mbp2021a_h_m;
-    }
-    else if ((strcmp(currentGivenMac, macTypes.mbp2021b)) == 0) { // 16"
-            newWidth = macResolutions.mbp2021b_w_d;
-            newHeight = macResolutions.mbp2021b_h_d;
-        
-            if ((newHeight == currentHeight) && (newWidth == currentWidth))
-                newHeight = macResolutions.mbp2021b_h_m;
-    }
-    else if ((strcmp(currentGivenMac, macTypes.mba2022)) == 0) { // Air
-            newWidth = macResolutions.mba2022_w_d;
-            newHeight = macResolutions.mba2022_h_d;
-        
-            if ((newHeight == currentHeight) && (newWidth == currentWidth))
-                newHeight = macResolutions.mba2022_h_m;
-    }
 
+    auto resolution = getResolution(thisMac.macModel.data());
+    
+    newWidth = (int)std::get<0>(resolution);
+    newHeight = (int)std::get<2>(resolution);
+
+    if (currentHeight == (int)std::get<2>(resolution))
+        newHeight = (int)std::get<1>(resolution);
+    
     
     
     CFStringRef keys[1] = {kCGDisplayShowDuplicateLowResolutionModes};
@@ -243,6 +176,7 @@ int main(int argc, const char* argv[]) {
     
     CFRelease(modes);
 
+    
     CGDisplayConfigRef config;
     
     if (CGBeginDisplayConfiguration(&config) != kCGErrorSuccess) {
@@ -262,5 +196,6 @@ int main(int argc, const char* argv[]) {
     
     printf("notchutil: successfully changed resolution from %dx%d to %dx%d\n\n", currentWidth, currentHeight, newWidth, newHeight);
 
+    
     return 0;
 }
