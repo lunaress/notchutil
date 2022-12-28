@@ -191,10 +191,8 @@ int main(int argc, const char* argv[]) {
     
     // may god have mercy on my soul
     
-    if (isForcingMac)
-        currentGivenMac = forcedMac;
-    else
-        currentGivenMac = thisMac.macModel.data();
+    
+    isForcingMac ? currentGivenMac = forcedMac : currentGivenMac = thisMac.macModel.data();
     
     
     if ((strcmp(currentGivenMac, macTypes.mbp2021a)) == 0) { // 14"
