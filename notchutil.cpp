@@ -61,7 +61,7 @@ const char* validMacBooksText =
 
 
 std::tuple<int, int, int> getResolution(char* model) {
-    // default height, default width, modified width for fitting the resolution below the notch
+    // default height, default width, modified height for fitting the resolution below the notch
     if (strcmp(model, macTypes.mbp2021a) == 0) return std::make_tuple(1512, 982, 945);
     if (strcmp(model, macTypes.mbp2021b) == 0) return std::make_tuple(1728, 1117, 1080);
     if (strcmp(model, macTypes.mba2022) == 0) return std::make_tuple(1280, 832, 800);
